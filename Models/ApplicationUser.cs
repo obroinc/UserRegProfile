@@ -18,5 +18,6 @@ namespace UserRegProfile.Models
         public string Player2_Team { get; set; }
 
 
+
     }
 }
