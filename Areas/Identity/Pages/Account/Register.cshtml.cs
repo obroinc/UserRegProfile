@@ -14,6 +14,9 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+using UserRegProfile.Data;
+using UserRegProfile.Models;
+using UserRegProfile.Utility;
 
 namespace UserRegProfile.Areas.Identity.Pages.Account
 {
@@ -24,17 +27,22 @@ namespace UserRegProfile.Areas.Identity.Pages.Account
         private readonly UserManager<IdentityUser> _userManager;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
-
+        private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly ApplicationDbContext _db;
         public RegisterModel(
             UserManager<IdentityUser> userManager,
             SignInManager<IdentityUser> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            RoleManager<IdentityRole>roleManager,
+            ApplicationDbContext db)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
+            _db = db;
+            _roleManager = roleManager;
         }
 
         [BindProperty]
@@ -102,10 +110,43 @@ namespace UserRegProfile.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
-                var user = new IdentityUser { UserName = Input.Email, Email = Input.Email };
+                //Changing fron Idenetity User to ApplicationUser with extra details from reg
+                var user = new ApplicationUser { UserName = Input.Email, 
+                    Email = Input.Email,
+                    First_Name=Input.First_Name,
+                    Last_Name=Input.Last_Name,
+                    Player1_First_Name=Input.Player1_First_Name,
+                    Player1_Last_Name=Input.Player1_Last_Name,
+                    Player1_Team=Input.Player1_Team,
+                    Player2_First_Name=Input.Player2_First_Name,
+                    Player2_Last_Name=Input.Player2_Last_Name,
+                    Player2_Team=Input.Player2_Team,
+                    PhoneNumber=Input.PhoneNumber
+                };
+
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 if (result.Succeeded)
+
                 {
+                    if(!await _roleManager.RoleExistsAsync(SD.AdminUser))
+                    {
+                        await _roleManager.CreateAsync(new IdentityRole(SD.AdminUser));
+
+                    }
+
+                    if (!await _roleManager.RoleExistsAsync(SD.MemberUser))
+                    {
+                        await _roleManager.CreateAsync(new IdentityRole(SD.MemberUser));
+
+                    }
+                    if (!await _roleManager.RoleExistsAsync(SD.CoachUser))
+                    {
+                        await _roleManager.CreateAsync(new IdentityRole(SD.CoachUser));
+
+                    }
+
+                    await _userManager.AddToRoleAsync(user, SD.AdminUser);
+
                     _logger.LogInformation("User created a new account with password.");
 
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
