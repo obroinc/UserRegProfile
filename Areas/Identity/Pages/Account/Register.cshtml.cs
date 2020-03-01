@@ -44,7 +44,33 @@ namespace UserRegProfile.Areas.Identity.Pages.Account
         public IList<AuthenticationScheme> ExternalLogins { get; set; }
 
         public class InputModel
-        {
+
+                    {
+            [Required]          
+            [Display(Name = "Contact's First Name")]
+            public string First_Name { get; set; }
+
+            [Required]
+            [Display(Name = "Contact's Last Name")]
+            public string Last_Name { get; set; }
+
+            [Display(Name = "Player First Name")]
+            public string Player1_First_Name { get; set; }
+            [Display(Name = "Player Last Name")]
+            public string Player1_Last_Name { get; set; }
+            [Display(Name = "Choose Team")]
+            public string Player1_Team { get; set; }
+            [Display(Name = "Player First Name")]
+            public string Player2_First_Name { get; set; }
+            [Display(Name = "Player First Name")]
+            public string Player2_Last_Name { get; set; }
+            [Display(Name = "Choose Team")]
+            public string Player2_Team { get; set; }
+
+            [Required]
+            [Display(Name = "Mobile Phone Number (To Recieve Club update Information)")]
+            public string PhoneNumber { get; set; }
+
             [Required]
             [EmailAddress]
             [Display(Name = "Email")]
