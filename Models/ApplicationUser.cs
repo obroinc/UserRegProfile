@@ -13,9 +13,7 @@ namespace UserRegProfile.Models
         public string Player1_First_Name { get; set; }
         public string Player1_Last_Name { get; set; }
         public string Player1_Team { get; set; }
-        public string Player2_First_Name { get; set; }
-        public string Player2_Last_Name { get; set; }
-        public string Player2_Team { get; set; }
+       
 
 
 
